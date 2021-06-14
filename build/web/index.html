@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+  -->
+  <base href="/webapp/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="A webapp project.">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="webapp">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="manifest" href="site.webmanifest">
+  <meta name="msapplication-TileColor" content="#da532c">
+  <meta name="theme-color" content="#ffffff">
+
+  <title>webapp</title>
+
+</head>
+
+<body>
+  <style>
+    .center {
+      margin: 0;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin-right: -50%;
+      transform: translate(-50%, -50%)
+    }
+
+
+    .cssload-container {
+      position: relative;
+    }
+
+    .cssload-whirlpool,
+    .cssload-whirlpool::before,
+    .cssload-whirlpool::after {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      border: 2px solid rgb(204, 204, 204);
+      border-left-color: rgb(193, 67, 224);
+      border-radius: 1998px;
+      -o-border-radius: 1998px;
+      -ms-border-radius: 1998px;
+      -webkit-border-radius: 1998px;
+      -moz-border-radius: 1998px;
+    }
+
+    .cssload-whirlpool {
+      margin: -50px 0 0 -50px;
+      height: 100px;
+      width: 100px;
+      animation: cssload-rotate 1150ms linear infinite;
+      -o-animation: cssload-rotate 1150ms linear infinite;
+      -ms-animation: cssload-rotate 1150ms linear infinite;
+      -webkit-animation: cssload-rotate 1150ms linear infinite;
+      -moz-animation: cssload-rotate 1150ms linear infinite;
+    }
+
+    .cssload-whirlpool::before {
+      content: "";
+      margin: -46px 0 0 -46px;
+      height: 88px;
+      width: 88px;
+      animation: cssload-rotate 1150ms linear infinite;
+      -o-animation: cssload-rotate 1150ms linear infinite;
+      -ms-animation: cssload-rotate 1150ms linear infinite;
+      -webkit-animation: cssload-rotate 1150ms linear infinite;
+      -moz-animation: cssload-rotate 1150ms linear infinite;
+    }
+
+    .cssload-whirlpool::after {
+      content: "";
+      margin: -58px 0 0 -58px;
+      height: 112px;
+      width: 112px;
+      animation: cssload-rotate 2300ms linear infinite;
+      -o-animation: cssload-rotate 2300ms linear infinite;
+      -ms-animation: cssload-rotate 2300ms linear infinite;
+      -webkit-animation: cssload-rotate 2300ms linear infinite;
+      -moz-animation: cssload-rotate 2300ms linear infinite;
+    }
+
+
+
+    @keyframes cssload-rotate {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @-o-keyframes cssload-rotate {
+      100% {
+        -o-transform: rotate(360deg);
+      }
+    }
+
+    @-ms-keyframes cssload-rotate {
+      100% {
+        -ms-transform: rotate(360deg);
+      }
+    }
+
+    @-webkit-keyframes cssload-rotate {
+      100% {
+        -webkit-transform: rotate(360deg);
+      }
+    }
+
+    @-moz-keyframes cssload-rotate {
+      100% {
+        -moz-transform: rotate(360deg);
+      }
+    }
+  </style>
+
+  <div class="center">
+    <div class="cssload-container">
+      <div class="cssload-whirlpool"></div>
+    </div>
+  </div>
+
+  <!-- This script installs service_worker.js to provide PWA functionality to
+       application. For more information, see:
+       https://developers.google.com/web/fundamentals/primers/service-workers -->
+  <script>
+    var serviceWorkerVersion = '1974515660';
+    var scriptLoaded = false;
+    function loadMainDartJs() {
+      if (scriptLoaded) {
+        return;
+      }
+      scriptLoaded = true;
+      var scriptTag = document.createElement('script');
+      scriptTag.src = 'main.dart.js';
+      scriptTag.type = 'application/javascript';
+      document.body.append(scriptTag);
+    }
+
+    if ('serviceWorker' in navigator) {
+      // Service workers are supported. Use them.
+      window.addEventListener('load', function () {
+        // Wait for registration to finish before dropping the <script> tag.
+        // Otherwise, the browser will load the script multiple times,
+        // potentially different versions.
+        var serviceWorkerUrl = 'flutter_service_worker.js?v=' + serviceWorkerVersion;
+        navigator.serviceWorker.register(serviceWorkerUrl)
+          .then((reg) => {
+            function waitForActivation(serviceWorker) {
+              serviceWorker.addEventListener('statechange', () => {
+                if (serviceWorker.state == 'activated') {
+                  console.log('Installed new service worker.');
+                  loadMainDartJs();
+                }
+              });
+            }
+            if (!reg.active && (reg.installing || reg.waiting)) {
+              // No active web worker and we have installed or are installing
+              // one for the first time. Simply wait for it to activate.
+              waitForActivation(reg.installing ?? reg.waiting);
+            } else if (!reg.active.scriptURL.endsWith(serviceWorkerVersion)) {
+              // When the app updates the serviceWorkerVersion changes, so we
+              // need to ask the service worker to update.
+              console.log('New service worker available.');
+              reg.update();
+              waitForActivation(reg.installing);
+            } else {
+              // Existing service worker is still good.
+              console.log('Loading app from service worker.');
+              loadMainDartJs();
+            }
+          });
+
+        // If service worker doesn't succeed in a reasonable amount of time,
+        // fallback to plaint <script> tag.
+        setTimeout(() => {
+          if (!scriptLoaded) {
+            console.warn(
+              'Failed to load app from service worker. Falling back to plain <script> tag.',
+            );
+            loadMainDartJs();
+          }
+        }, 4000);
+      });
+    } else {
+      // Service workers not supported. Just drop the <script> tag.
+      loadMainDartJs();
+    }
+  </script>
+</body>
+
+</html>
